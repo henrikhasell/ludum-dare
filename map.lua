@@ -45,6 +45,9 @@ function map.load(tileMapData)
             if v2 == 1 then
                  map.addTile(k2, k1)
             end
+            if v2 == 2 then
+                 map.addPlayer(k2, k1)
+            end
         end
     end
 end
@@ -53,10 +56,22 @@ function map.addTile(x, y)
     local worldX, worldY = map.getPosition(x, y)
 
     local tile = {}
-        tile.body = love.physics.newBody(world, worldX, worldY, "static")
+        tile.body = love.physics.newBody(map.world, worldX, worldY, "static")
         tile.shape = love.physics.newRectangleShape(32, 32)
         tile.fixture = love.physics.newFixture(tile.body, tile.shape)
         tile.fixture:setUserData("Tile")
 
     table.insert(map.tiles, tile)
+end
+
+function map.addPlayer(x, y)
+    local worldX, worldY = map.getPosition(x, y)
+
+    local player = {}
+        player.body = love.physics.newBody(map.world, worldX, worldY, "dynamic")
+        player.shape = love.physics.newCircleShape(16)
+        player.fixture = love.physics.newFixture(player.body, player.shape)
+        player.fixture:setUserData("Player")
+
+    map.player = player
 end

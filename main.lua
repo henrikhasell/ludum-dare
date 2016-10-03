@@ -4,20 +4,9 @@ function love.load()
 
     love.physics.setMeter(128) -- 128 pixels is equal to one meter
 
-    world = love.physics.newWorld()
-        world:setCallbacks(beginContact, endContact, preSolve, postSolve)
-
     keyPressed = {
         ["up"] = false, ["down"] = false, ["left"] = false, ["right"] = false
     }
-
-    ball = {}
-        ball.body = love.physics.newBody(world, 400,200, "dynamic")
-        ball.body:setMass(10)
-        ball.shape = love.physics.newCircleShape(16)
-        ball.fixture = love.physics.newFixture(ball.body, ball.shape)
-        ball.fixture:setRestitution(0.4)    -- make it bouncy
-        ball.fixture:setUserData("Ball")
 
     tileData = {
         w = 32, h = 32
@@ -53,14 +42,11 @@ function love.load()
 
     map.load(tileMapData)
 
-    text       = ""   -- we'll use this to put info text on the screen later
-    persisting = 0    -- we'll use this to store the state of repeated callback calls
-
     movementForce = 500
 end
- 
+
 function love.update(dt)
-    world:update(dt)
+    map.world:update(dt)
 
     for key, value in pairs(keyPressed) do
         if love.keyboard.isDown(key) then
@@ -71,7 +57,7 @@ function love.update(dt)
     end
 
     currentVelocity = {}
-    currentVelocity.x, currentVelocity.y = ball.body:getLinearVelocity()
+    currentVelocity.x, currentVelocity.y = map.player.body:getLinearVelocity()
 
     desiredVelocity = { x = 0, y = 0 }
 
@@ -94,58 +80,29 @@ function love.update(dt)
     }
 
     impulse = {
-        x = velocityChange.x * ball.body:getMass(),
-        y = velocityChange.y * ball.body:getMass()
+        x = velocityChange.x * map.player.body:getMass(),
+        y = velocityChange.y * map.player.body:getMass()
     }
 
-    ball.body:applyLinearImpulse(impulse.x, impulse.y)
-
-    -- if love.keyboard.isDown("right") then
-    --     ball.body:applyForce(movementForce, 0)
-    -- elseif love.keyboard.isDown("left") then
-    --     ball.body:applyForce(-movementForce, 0)
-    -- end
-    -- if love.keyboard.isDown("up") then
-    --     ball.body:applyForce(0, -movementForce)
-    -- elseif love.keyboard.isDown("down") then
-    --     ball.body:applyForce(0, movementForce)
-    -- end
- 
-
-
-    if string.len(text) > 768 then    -- cleanup when 'text' gets too long
-        text = ""
-    end
+    map.player.body:applyLinearImpulse(impulse.x, impulse.y)
 end
- 
+
 function love.draw()
-    love.graphics.circle("line", ball.body:getX(),ball.body:getY(), ball.shape:getRadius(), 20)
+    love.graphics.circle("line", map.player.body:getX(),map.player.body:getY(), map.player.shape:getRadius(), 20)
 
     for key, value in pairs(map.tiles) do
         love.graphics.polygon("line", value.body:getWorldPoints(value.shape:getPoints()))
     end
+end
 
-    love.graphics.print(text, 10, 10)
+function beginContact(a, b, collision)
 end
- 
-function beginContact(a, b, coll)
-    x,y = coll:getNormal()
-    text = text.."\n"..a:getUserData().." colliding with "..b:getUserData().." with a vector normal of: "..x..", "..y
+
+function endContact(a, b, collision)
 end
- 
-function endContact(a, b, coll)
-    persisting = 0
-    text = text.."\n"..a:getUserData().." uncolliding with "..b:getUserData()
+
+function preSolve(a, b, collision)
 end
- 
-function preSolve(a, b, coll)
-    if persisting == 0 then    -- only say when they first start touching
-        text = text.."\n"..a:getUserData().." touching "..b:getUserData()
-    elseif persisting < 20 then    -- then just start counting
-        text = text.." "..persisting
-    end
-    persisting = persisting + 1    -- keep track of how many updates they've been touching for
-end
- 
-function postSolve(a, b, coll, normalimpulse, tangentimpulse)
+
+function postSolve(a, b, collision, normalImpulse, tangentImpulse)
 end
