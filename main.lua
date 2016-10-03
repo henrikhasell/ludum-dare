@@ -121,11 +121,8 @@ end
 function love.draw()
     love.graphics.circle("line", ball.body:getX(),ball.body:getY(), ball.shape:getRadius(), 20)
 
-    for k1,v1 in pairs(map.tiles) do
-        for k2,v2 in pairs(v1) do
-            local tile = map.tiles[k1][k2]
-            love.graphics.polygon("line", map.tiles[k1][k2].body:getWorldPoints(map.tiles[k1][k2].shape:getPoints()))
-        end
+    for key, value in pairs(map.tiles) do
+        love.graphics.polygon("line", value.body:getWorldPoints(value.shape:getPoints()))
     end
 
     love.graphics.print(text, 10, 10)
