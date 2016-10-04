@@ -3,6 +3,7 @@ function love.load()
     require("map") -- require
 
     love.physics.setMeter(128) -- 128 pixels is equal to one meter
+    love.graphics.setDefaultFilter( "nearest", "nearest") -- To prevent bleeding
 
     keyPressed = {
         ["up"] = false, ["down"] = false, ["left"] = false, ["right"] = false
@@ -42,10 +43,11 @@ function love.load()
 
     map.load(tileMapData)
 
-    movementForce = 500
+    movementForce = 300
 end
 
 function love.update(dt)
+    map.update(dt)
     map.world:update(dt)
 
     for key, value in pairs(keyPressed) do
@@ -88,10 +90,14 @@ function love.update(dt)
 end
 
 function love.draw()
-    love.graphics.circle("line", map.player.body:getX(),map.player.body:getY(), map.player.shape:getRadius(), 20)
+    love.graphics.draw(map.spriteBatch)
 
-    for key, value in pairs(map.tiles) do
-        love.graphics.polygon("line", value.body:getWorldPoints(value.shape:getPoints()))
+    local playerQuad = love.graphics.newQuad(32 * 3, 32 * 0, 32, 32, 32 * 4, 32 * 1)
+    love.graphics.draw(map.spriteSheet, playerQuad, map.player.body:getX(), map.player.body:getY(), 0, 1, 1, map.player.shape:getRadius(), map.player.shape:getRadius())
+
+    for key, value in pairs(map.turrets) do
+        local turretQuad = love.graphics.newQuad(32 * 0, 32 * 0, 32, 32, 32 * 4, 32 * 1)
+        love.graphics.draw(map.spriteSheet, turretQuad, value.position.x, value.position.y, 0, 1, 1, 16, 16)
     end
 end
 
