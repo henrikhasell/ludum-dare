@@ -3,37 +3,9 @@ map = {}
 require("turret")
 
 collisionMasks = {
-    walls = 1
-    bullet = 2,
-    player = 4
-}
-
--- 0: Empty space.
--- 1: Wall.
--- 2: Starting point.
--- 3: Finishing point.
--- 4: Turret.
-tileMapData = {
-    {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
-    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 1},
-    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-    {1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
-    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-    {1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1},
-    {1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-    {1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-    {1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-    {1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1},
-    {1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1},
-    {1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 1, 0, 0, 0, 1},
-    {1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1},
-    {1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1},
-    {1, 0, 4, 0, 1, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 4, 0, 1},
-    {1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1},
-    {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}
+    walls  = 0x10000000,
+    bullet = 0x01000000,
+    player = 0x00100000
 }
 
 map.spriteSheet = love.graphics.newImage("Assets/Exported/SpriteSheet.png")
@@ -127,17 +99,61 @@ function map.addTurret(x, y)
         }
         turret.rotation = 0
         turret.cooldown = 0
-        turret.update = function(this, dt)
-            if this.cooldown <= 0 then
-                this.cooldown = 1
-                this:fireBullet()
+        function turret.update(dt)
+            local relativePosition = {}
+                relativePosition.x = map.player.body:getX() - turret.position.x
+                relativePosition.y = map.player.body:getY() - turret.position.y
+
+            turret.rotation = math.atan2(relativePosition.y, relativePosition.x)
+
+            if turret.cooldown <= 0 then
+                turret.cooldown = 1
+                local playerVisible = turret:canSeePlayer()
+                if playerVisible == true then
+                    turret:fireBullet()
+                end
             else
-                this.cooldown = this.cooldown - dt
+                turret.cooldown = turret.cooldown - 0.2
             end
         end
+        function turret.canSeePlayer()
+            local playerVisible = true
+            function callback(fixture, x, y, xn, yn, fraction)
+                local userData = fixture:getUserData()
+                if userData == "Tile" then
+                    playerVisible = false
+                    return 0
+                else
+                    return -1
+                end
+            end
+            map.world:rayCast(turret.position.x, turret.position.y, map.player.body:getX(), map.player.body:getY(), callback)
+            return playerVisible
+        end
         function turret.fireBullet()
+            local bulletVelocity = {}
+                bulletVelocity.x = math.cos(turret.rotation) * 320
+                bulletVelocity.y = math.sin(turret.rotation) * 320
             local bullet = {}
-            -- TODO: Define bullet.
+                bullet.body = love.physics.newBody(map.world, turret.position.x, turret.position.y, "dynamic")
+                bullet.shape = love.physics.newCircleShape(8)
+                bullet.fixture = love.physics.newFixture(bullet.body, bullet.shape)
+                bullet.fixture:setFilterData(collisionMasks.bullet, collisionMasks.player, 0)
+                bullet.fixture:setUserData("Bullet")
+                function bullet.isOffScreen()
+                    if bullet.body:getX() < 0 or bullet.body:getX() > 32 * 20 then
+                        return true
+                    end
+                    if bullet.body:getY() < 0 or bullet.body:getY() > 32 * 20 then
+                        return true
+                    end
+                    return false
+                end
+                function bullet.destroy()
+                    table.remove(map.bullets, bullet)
+                    bullet.body:destroy()
+                end
+            bullet.body:setLinearVelocity(bulletVelocity.x, bulletVelocity.y)
             table.insert(map.bullets, bullet)
         end
 
@@ -150,6 +166,9 @@ function map.update(dt)
     end
 
     for key, value in pairs(map.bullets) do
-        -- value:update(dt)
+        if value:isOffScreen() then
+            print("Removing bullet @ " .. key)
+            table.remove(map.bullets, key)
+        end
     end
 end

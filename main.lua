@@ -99,6 +99,13 @@ function love.draw()
         local turretQuad = love.graphics.newQuad(32 * 0, 32 * 0, 32, 32, 32 * 4, 32 * 1)
         love.graphics.draw(map.spriteSheet, turretQuad, value.position.x, value.position.y, 0, 1, 1, 16, 16)
     end
+
+    love.graphics.setColor(0, 0, 255)
+    for key, value in pairs(map.bullets) do
+        local turretQuad = love.graphics.newQuad(32 * 0, 32 * 0, 32, 32, 32 * 4, 32 * 1)
+        love.graphics.circle("line", value.body:getX(), value.body:getY(), value.shape:getRadius())
+    end
+    love.graphics.setColor(255, 255, 255)
 end
 
 function beginContact(a, b, collision)
