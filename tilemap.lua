@@ -1,11 +1,7 @@
 require("textures")
 require("utilities")
-
-game = {}
-
-    function game.getPosition(x, y)
-        return (x - 0.5) * 32, (y - 0.5) * 32
-    end
+require("player")
+require("turret")
 
 TileMap = {}
 
@@ -25,11 +21,12 @@ TileMap = {}
 
             -- Variables for physical world:
             instance.world = love.physics.newWorld()
+            instance.turrets = {}
             instance.bullets = {}
             instance.tiles = {}
 
             -- Load tiles:
-            TileMap.initialise(instance, tileMapData)
+            instance:initialise(tileMapData)
 
         -- Return new TileMap instance:
         return instance
@@ -64,6 +61,13 @@ TileMap = {}
 
     function TileMap:addTile(x, y)
         self.spriteBatch:add(textures.quads.tile, x - 16, y - 16)
+        
+        local tile = {}
+            tile.body    = love.physics.newBody(self.world, x, y, "static")
+            tile.shape   = love.physics.newRectangleShape(32, 32)
+            tile.fixture = love.physics.newFixture(tile.body, tile.shape)
+
+        table.insert(self.tiles, tile)
     end
 
     function TileMap:addFloor(x, y)
@@ -72,6 +76,7 @@ TileMap = {}
 
     function TileMap:addPlayer(x, y)
         print("Adding player at " .. x .. ", " .. y)
+        self.player = Player:new(self, x, y)
     end
 
     function TileMap:addExit(x, y)
@@ -80,6 +85,26 @@ TileMap = {}
 
     function TileMap:addTurret(x, y)
         print("Adding turret at " .. x .. ", " .. y)
+        local turret = Turret:new(self, x, y)
+        table.insert(self.turrets, turret)
+    end
+
+    function TileMap:draw()
+        love.graphics.draw(self.spriteBatch)
+        for key, value in pairs(self.turrets) do
+            -- TODO: Render turrets.
+        end
+
+        for key, value in pairs(self.bullets) do
+            -- TODO: Render bullets.
+        end
+        
+        self.player:draw()
+    end
+
+    function TileMap:update(dt)
+        self.world:update(dt)
+        self.player:update()
     end
 
     function TileMap:speak()
