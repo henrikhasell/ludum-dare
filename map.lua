@@ -48,6 +48,8 @@ function map.load(tileMapData)
             end
         end
     end
+
+    return map
 end
 
 function map.addFloor(x, y)
@@ -161,13 +163,14 @@ function map.addTurret(x, y)
 end
 
 function map.update(dt)
+    map.world:update(dt)
+
     for key, value in pairs(map.turrets) do
         value:update(dt)
     end
 
     for key, value in pairs(map.bullets) do
         if value:isOffScreen() then
-            print("Removing bullet @ " .. key)
             table.remove(map.bullets, key)
         end
     end

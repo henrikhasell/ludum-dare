@@ -10,9 +10,11 @@ Player = {}
     function Player:new(tileMap, x, y)
         local instance = {}
             setmetatable(instance, self.metaTable)
-            instance.body = love.physics.newBody(tileMap.world, x, y, "dynamic")
-            instance.shape = love.physics.newCircleShape(16)
+            instance.body    = love.physics.newBody(tileMap.world, x, y, "dynamic")
+            instance.shape   = love.physics.newCircleShape(16)
             instance.fixture = love.physics.newFixture(instance.body, instance.shape)
+
+            instance.fixture:setFilterData(collision.player, collision.wall, 0)
             instance.fixture:setFriction(0)
         return instance
     end

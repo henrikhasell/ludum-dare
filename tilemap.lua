@@ -23,7 +23,7 @@ TileMap = {}
             instance.world = love.physics.newWorld()
             instance.turrets = {}
             instance.bullets = {}
-            instance.tiles = {}
+            instance.walls = {}
 
             -- Load tiles:
             instance:initialise(tileMapData)
@@ -42,7 +42,7 @@ TileMap = {}
                     self:addFloor(x, y)
                 end
                 if v2 == 1 then
-                    self:addTile(x, y)
+                    self:addWall(x, y)
                 end
                 if v2 == 2 then
                     self:addFloor(x, y)
@@ -59,15 +59,17 @@ TileMap = {}
         end
     end
 
-    function TileMap:addTile(x, y)
+    function TileMap:addWall(x, y)
         self.spriteBatch:add(textures.quads.tile, x - 16, y - 16)
-        
-        local tile = {}
-            tile.body    = love.physics.newBody(self.world, x, y, "static")
-            tile.shape   = love.physics.newRectangleShape(32, 32)
-            tile.fixture = love.physics.newFixture(tile.body, tile.shape)
 
-        table.insert(self.tiles, tile)
+        local wall = {}
+            wall.body    = love.physics.newBody(self.world, x, y, "static")
+            wall.shape   = love.physics.newRectangleShape(32, 32)
+            wall.fixture = love.physics.newFixture(wall.body, wall.shape)
+
+            wall.fixture:setFilterData(collision.wall, collision.player, 0)
+
+        table.insert(self.walls, wall)
     end
 
     function TileMap:addFloor(x, y)
@@ -96,15 +98,25 @@ TileMap = {}
         end
 
         for key, value in pairs(self.bullets) do
-            -- TODO: Render bullets.
+            value:draw()
         end
-        
+
         self.player:draw()
     end
 
     function TileMap:update(dt)
-        self.world:update(dt)
+        -- Update the player's velocity.
         self.player:update()
+        -- Perform logic on all turrets.
+        for key, value in pairs(self.turrets) do
+            value:update(self, dt)
+        end
+        -- Perform logic on all bullets.
+        for key, value in pairs(self.bullets) do
+            value:update(self, dt)
+        end
+        -- Perform physics time-step.
+        self.world:update(dt)
     end
 
     function TileMap:speak()
