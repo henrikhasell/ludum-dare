@@ -16,6 +16,8 @@ Turret = {}
             instance.shape   = love.physics.newRectangleShape(32, 32)
             instance.fixture = love.physics.newFixture(instance.body, instance.shape)
 
+            instance.fixture:setFilterData(collision.turret, collision.player, 0)
+
         return instance
     end
 
@@ -24,13 +26,27 @@ Turret = {}
         table.insert(tileMap.bullets, bullet)
     end
 
-    function Turret:observe(target)
+    function Turret:observe(tileMap, target)
+	local visible = true
 
-        local function callback()
-
+        local function callback(fixture)
+            if fixture:getUserData() == "Wall" then
+                visible = false
+                return 0
+            else
+                return -1
+            end
         end
 
-        return false
+	local x1 = self.body:getX()
+	local y1 = self.body:getY()
+
+	local x2 = target.body:getX()
+	local y2 = target.body:getY()
+
+        tileMap.world:rayCast(x1, y1, x2, y2, callback)
+
+        return visible
     end
 
     function Turret:update(tileMap, dt)
@@ -44,7 +60,7 @@ Turret = {}
         self.rotation = math.atan2(relativePosition.y, relativePosition.x)
 
         if self.cooldown <= 0 then
-            if self.observe(target) then
+            if self:observe(tileMap, target) then
                 self.cooldown = Turret.cooldown
                 self:fireBullet(tileMap)
             end

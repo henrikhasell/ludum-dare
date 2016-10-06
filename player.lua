@@ -14,7 +14,8 @@ Player = {}
             instance.shape   = love.physics.newCircleShape(16)
             instance.fixture = love.physics.newFixture(instance.body, instance.shape)
 
-            instance.fixture:setFilterData(collision.player, collision.wall, 0)
+            instance.fixture:setFilterData(collision.player, collision.wall + collision.turret + collision.bullet, 0)
+            -- So that the player does not move slowly in tight spaces:
             instance.fixture:setFriction(0)
         return instance
     end

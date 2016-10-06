@@ -68,6 +68,7 @@ TileMap = {}
             wall.fixture = love.physics.newFixture(wall.body, wall.shape)
 
             wall.fixture:setFilterData(collision.wall, collision.player, 0)
+            wall.fixture:setUserData("Wall")
 
         table.insert(self.walls, wall)
     end
