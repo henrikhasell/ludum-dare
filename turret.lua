@@ -38,11 +38,11 @@ Turret = {}
             end
         end
 
-	local x1 = self.body:getX()
-	local y1 = self.body:getY()
+        local x1 = self.body:getX()
+        local y1 = self.body:getY()
 
-	local x2 = target.body:getX()
-	local y2 = target.body:getY()
+        local x2 = target.body:getX()
+        local y2 = target.body:getY()
 
         tileMap.world:rayCast(x1, y1, x2, y2, callback)
 

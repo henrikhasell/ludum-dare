@@ -84,6 +84,7 @@ TileMap = {}
 
     function TileMap:addExit(x, y)
         print("Adding exit at " .. x .. ", " .. y)
+        self.spriteBatch:add(textures.quads.exit, x - 16, y - 16)
     end
 
     function TileMap:addTurret(x, y)
@@ -114,7 +115,9 @@ TileMap = {}
         end
         -- Perform logic on all bullets.
         for key, value in pairs(self.bullets) do
-            value:update(self, dt)
+            if value:finished() then
+                table.remove(self.bullets, key)
+            end
         end
         -- Perform physics time-step.
         self.world:update(dt)

@@ -28,14 +28,26 @@ Bullet = {}
         return instance
     end
 
-    function Bullet:update()
+    function Bullet:finished()
+        -- Get the current position:
+        local x = self.body:getX()
+        local y = self.body:getY()
 
+        if x < 64 or x > 32 * 18 then
+            return true
+        end
+        if y < 64 or y > 32 * 18 then
+            return true
+        end
+
+        return false
     end
 
     function Bullet:draw()
         local x = self.body:getX()
         local y = self.body:getY()
         local r = self.shape:getRadius()
+
         love.graphics.setColor(0, 0, 255)
         love.graphics.circle("line", x, y, r)
         love.graphics.setColor(255, 255, 255)
