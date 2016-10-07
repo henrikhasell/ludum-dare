@@ -30,12 +30,8 @@ Turret = {}
 	local visible = true
 
         local function callback(fixture)
-            if fixture:getUserData() == "Wall" then
-                visible = false
-                return 0
-            else
-                return -1
-            end
+            visible = fixture:getUserData() ~= "Wall"
+            return visible and -1 or 0
         end
 
         local x1 = self.body:getX()
