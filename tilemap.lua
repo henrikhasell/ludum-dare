@@ -84,7 +84,16 @@ TileMap = {}
 
     function TileMap:addExit(x, y)
         print("Adding exit at " .. x .. ", " .. y)
+
         self.spriteBatch:add(textures.quads.exit, x - 16, y - 16)
+
+        local exit = {}
+            exit.body    = love.physics.newBody(self.world, x, y, "static")
+            exit.shape   = love.physics.newRectangleShape(32, 32)
+            exit.fixture = love.physics.newFixture(exit.body, exit.shape)
+
+            exit.fixture:setFilterData(collision.exit, collision.player, 0)
+            exit.fixture:setUserData("Exit")
     end
 
     function TileMap:addTurret(x, y)

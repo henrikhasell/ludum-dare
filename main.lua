@@ -14,10 +14,11 @@ function love.load()
             textures.quads.player = love.graphics.newQuad(32 * 3, 32 * 0, 32, 32, 32 * 4, 32 * 1)
 
     collision = {}
-        collision.player = 1
-        collision.bullet = 2
-        collision.turret = 4
-        collision.wall   = 8
+        collision.player = 0x01
+        collision.bullet = 0x02
+        collision.turret = 0x04
+        collision.wall   = 0x08
+        collision.exit   = 0x0F
 
     input = {}
         input.key = {}
@@ -55,6 +56,8 @@ function love.load()
     }
 
     tileMap = TileMap:new(tileMapData)
+
+    tileMap.world:setCallbacks(collisionCallback)
 end
 
 function love.update(dt)
@@ -63,6 +66,15 @@ function love.update(dt)
     end
 
     tileMap:update(dt)
+end
+
+function collisionCallback(fixture1, fixture2, collision)
+    local s1 = fixture1:getUserData()
+    local s2 = fixture2:getUserData()
+
+    if (s1 == "Player" and s2 == "Exit") or (s1 == "Exit" and s2 == "Player") then
+        tileMap:destroy()
+    end
 end
 
 function love.draw()

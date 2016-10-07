@@ -17,6 +17,7 @@ Turret = {}
             instance.fixture = love.physics.newFixture(instance.body, instance.shape)
 
             instance.fixture:setFilterData(collision.turret, collision.player, 0)
+            instance.fixture:setUserData("Turret")
 
         return instance
     end

@@ -24,6 +24,8 @@ Bullet = {}
             instance.body:setLinearVelocity(velocity.x, velocity.y)
             -- Set the bullet to only collide with the player:
             instance.fixture:setFilterData(collision.bullet, collision.player, 0)
+            -- Used for collision handling logic:
+            instance.fixture:setUserData("Bullet")
 
         return instance
     end
