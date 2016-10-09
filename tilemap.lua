@@ -1,7 +1,8 @@
-require("textures")
 require("utilities")
 require("player")
 require("turret")
+require("door")
+require("key")
 
 TileMap = {}
 
@@ -20,10 +21,12 @@ TileMap = {}
             instance.spriteBatch = love.graphics.newSpriteBatch(textures.spriteSheet, w * h)
 
             -- Variables for physical world:
-            instance.world = love.physics.newWorld()
+            instance.world   = love.physics.newWorld()
             instance.turrets = {}
             instance.bullets = {}
-            instance.walls = {}
+            instance.walls   = {}
+            instance.doors   = {}
+            instance.keys    = {}
 
             -- Load tiles:
             instance:initialise(tileMapData)
@@ -38,22 +41,26 @@ TileMap = {}
                 -- World position derived from coordinates:
                 x, y = utilities.getPosition(k2, k1)
 
-                if v2 == 0 then
+                if v2 == 0 or v2 == 2 or v2 == 3 or v2 == 5 or v2 == 6 then
                     self:addFloor(x, y)
                 end
                 if v2 == 1 then
                     self:addWall(x, y)
                 end
                 if v2 == 2 then
-                    self:addFloor(x, y)
                     self:addPlayer(x, y)
                 end
                 if v2 == 3 then
-                    self:addFloor(x, y)
                     self:addExit(x, y)
                 end
                 if v2 == 4 then
                     self:addTurret(x, y)
+                end
+                if v2 == 5 then
+                    self:addDoor(x, y)
+                end
+                if v2 == 6 then
+                    self:addKey(x, y)
                 end
             end
         end
@@ -78,12 +85,10 @@ TileMap = {}
     end
 
     function TileMap:addPlayer(x, y)
-        print("Adding player at " .. x .. ", " .. y)
         self.player = Player:new(self, x, y)
     end
 
     function TileMap:addExit(x, y)
-        print("Adding exit at " .. x .. ", " .. y)
 
         self.spriteBatch:add(textures.quads.exit, x - 16, y - 16)
 
@@ -97,15 +102,33 @@ TileMap = {}
     end
 
     function TileMap:addTurret(x, y)
-        print("Adding turret at " .. x .. ", " .. y)
         local turret = Turret:new(self, x, y)
         table.insert(self.turrets, turret)
     end
 
+    function TileMap:addDoor(x, y)
+        local door = Door:new(self, x, y)
+        table.insert(self.doors, door)
+    end
+
+    function TileMap:addKey(x, y)
+        local key = Key:new(self, x, y)
+        table.insert(self.keys, key)
+    end
+
     function TileMap:draw()
         love.graphics.draw(self.spriteBatch)
+
         for key, value in pairs(self.turrets) do
             -- TODO: Render turrets.
+        end
+
+        for key, value in pairs(self.doors) do
+            value:draw()
+        end
+
+        for key, value in pairs(self.keys) do
+            value:draw()
         end
 
         for key, value in pairs(self.bullets) do

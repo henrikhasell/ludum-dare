@@ -1,5 +1,3 @@
-require("textures")
-
 Player = {}
 
     Player.metaTable = {}
@@ -14,7 +12,7 @@ Player = {}
             instance.shape   = love.physics.newCircleShape(16)
             instance.fixture = love.physics.newFixture(instance.body, instance.shape)
             -- So that the player collides with everything:
-            instance.fixture:setFilterData(collision.player, 31, 0)
+            instance.fixture:setFilterData(collision.player, 0xff, 0)
             -- So that the player does not move slowly in tight spaces:
             instance.fixture:setFriction(0)
             -- Used for collision handling logic:

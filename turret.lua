@@ -28,7 +28,7 @@ Turret = {}
     end
 
     function Turret:observe(tileMap, target)
-	local visible = true
+        local visible = true
 
         local function callback(fixture)
             visible = fixture:getUserData() ~= "Wall"
