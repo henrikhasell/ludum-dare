@@ -112,24 +112,50 @@ TileMap = {}
             value:draw()
         end
 
-        self.player:draw()
+        if self.player then
+            self.player:draw()
+        end
     end
 
     function TileMap:update(dt)
         -- Update the player's velocity.
-        self.player:update()
+        if self.player then
+            self.player:update()
+        end
         -- Perform logic on all turrets.
         for key, value in pairs(self.turrets) do
             value:update(self, dt)
         end
         -- Perform logic on all bullets.
-        for key, value in pairs(self.bullets) do
-            if value:finished() then
-                table.remove(self.bullets, key)
+        local count = 1
+        while count <= #self.bullets do
+            -- Fetch the bullet at the current index:
+            local bullet = self.bullets[count]
+            -- If the bullet is finished then remove it:
+            if bullet:finished() then
+                table.remove(self.bullets, count)
+            else
+                count = count + 1
             end
         end
         -- Perform physics time-step.
-        self.world:update(dt)
+        if not self.world:isDestroyed() then
+            self.world:update(dt)
+        end
+    end
+
+    function TileMap:destroy()
+        -- Clear the background.
+        self.spriteBatch:clear()
+        -- Destroy the physics.
+        self.world:destroy();
+        -- Remove the player.
+        self.player = null
+        -- Remove all objects.
+        self.turrets = {}
+        self.bullets = {}
+        self.walls = {}
+
     end
 
     function TileMap:speak()
