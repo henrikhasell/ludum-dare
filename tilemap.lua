@@ -167,6 +167,29 @@ TileMap = {}
         end
     end
 
+    function TileMap:removeKey(key)
+        -- Perform a linear search for the key:
+        for index, value in pairs(tileMap.keys) do
+            if key == value.fixture then
+                -- Remove the key from the tile map:
+                local key = table.remove(tileMap.keys, index)
+                -- Destroy the key body:
+                key.body:destroy()
+                break
+            end
+        end
+
+        -- Check if all of the keys have been collected:
+        if #tileMap.keys == 0 then
+            -- Remove every door from the level:
+            while #tileMap.doors ~= 0 do
+                local door = table.remove(tileMap.doors)
+                door.body:destroy()
+            end
+        end
+
+    end
+
     function TileMap:destroy()
         -- Clear the background.
         self.spriteBatch:clear()

@@ -3,8 +3,6 @@ Key = {}
     Key.metaTable = {}
         Key.metaTable.__index = Key
 
-
-
     function Key:new(tileMap, x, y)
         local instance = {}
             setmetatable(instance, self.metaTable)
@@ -15,6 +13,7 @@ Key = {}
 
             instance.fixture:setFilterData(collision.key, collision.player, 0)
             instance.fixture:setUserData("Key")
+            instance.fixture:setSensor(true)
 
         return instance
     end
@@ -24,4 +23,6 @@ Key = {}
         local y = self.body:getY()
 
         love.graphics.draw(textures.spriteSheet, textures.quads.key, x, y, 0, 1, 1, 16, 16)
+
+        tileMap.keys[self] = null
     end

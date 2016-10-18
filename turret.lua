@@ -5,7 +5,7 @@ Turret = {}
     Turret.metaTable = {}
         Turret.metaTable.__index = Turret
 
-    Turret.cooldown = 0.2
+    Turret.cooldown = 0.1
     Turret.rotation = 0
 
     function Turret:new(tileMap, x, y)
@@ -31,7 +31,7 @@ Turret = {}
         local visible = true
 
         local function callback(fixture)
-            visible = fixture:getUserData() ~= "Wall"
+            visible = fixture:getUserData() ~= "Wall" and fixture:getUserData() ~= "Door"
             return visible and -1 or 0
         end
 
