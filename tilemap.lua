@@ -2,6 +2,7 @@ require("utilities")
 require("player")
 require("turret")
 require("door")
+require("fire")
 require("key")
 
 TileMap = {}
@@ -26,6 +27,7 @@ TileMap = {}
             instance.bullets = {}
             instance.walls   = {}
             instance.doors   = {}
+            instance.fires   = {}
             instance.keys    = {}
 
             -- Load tiles:
@@ -41,7 +43,7 @@ TileMap = {}
                 -- World position derived from coordinates:
                 x, y = utilities.getPosition(k2, k1)
 
-                if v2 == 0 or v2 == 2 or v2 == 3 or v2 == 5 or v2 == 6 then
+                if v2 == 0 or v2 == 2 or v2 == 3 or v2 == 5 or v2 == 6 or v2 == 7 or v2 == 8 then
                     self:addFloor(x, y)
                 end
                 if v2 == 1 then
@@ -62,6 +64,12 @@ TileMap = {}
                 if v2 == 6 then
                     self:addKey(x, y)
                 end
+                if v2 == 7 then
+                    self:addFire(x, y, Fire.direction.up)
+                end
+                if v2 == 8 then
+                    self:addFire(x, y, Fire.direction.right)
+                end
             end
         end
     end
@@ -74,7 +82,7 @@ TileMap = {}
             wall.shape   = love.physics.newRectangleShape(32, 32)
             wall.fixture = love.physics.newFixture(wall.body, wall.shape)
 
-            wall.fixture:setFilterData(collision.wall, collision.player, 0)
+            wall.fixture:setFilterData(collision.wall, collision.player + collision.fire, 0)
             wall.fixture:setUserData("Wall")
 
         table.insert(self.walls, wall)
@@ -116,6 +124,11 @@ TileMap = {}
         table.insert(self.keys, key)
     end
 
+    function TileMap:addFire(x, y, horizontal)
+        local fire = Fire:new(self, x, y, horizontal)
+        table.insert(self.fires, fire);
+    end
+
     function TileMap:draw()
         love.graphics.draw(self.spriteBatch)
 
@@ -132,6 +145,10 @@ TileMap = {}
         end
 
         for key, value in pairs(self.bullets) do
+            value:draw()
+        end
+
+        for key, value in pairs(self.fires) do
             value:draw()
         end
 

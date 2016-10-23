@@ -13,7 +13,7 @@ Door = {}
             instance.shape   = love.physics.newRectangleShape(32, 32)
             instance.fixture = love.physics.newFixture(instance.body, instance.shape)
 
-            instance.fixture:setFilterData(collision.door, collision.player, 0)
+            instance.fixture:setFilterData(collision.door, collision.player + collision.fire, 0)
             instance.fixture:setUserData("Door")
 
         return instance

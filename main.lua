@@ -22,7 +22,8 @@ function love.load()
         collision.wall   = 0x08
         collision.exit   = 0x10
         collision.door   = 0x20
-        collision.key    = 0x40
+        collision.fire   = 0x40
+        collision.key    = 0x80
 
     input = {}
         input.key = {}
@@ -31,7 +32,7 @@ function love.load()
             input.key.left  = false
             input.key.right = false
 
-    currentLevel = 1
+    currentLevel = 4
 
     -- 0: Empty space.
     -- 1: Wall.
@@ -40,6 +41,8 @@ function love.load()
     -- 4: Turret.
     -- 5: Door.
     -- 6: Key.
+    -- 7: Fire (vertical).
+    -- 8: Fire (horizontal).
     tileMapData = {
         {
             {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
@@ -179,10 +182,18 @@ function collisionCallback(fixture1, fixture2, collision)
     end
 
     if (s1 == "Player" and s2 == "Key") or (s1 == "Key" and s2 == "Player") then
-        print("Player on key collision occured!")
         tileMap:removeKey(s1 == "Key" and fixture1 or fixture2)
-    else
-        print("A collision has occured!")
+    end
+
+    if (s1 == "Player" and s2 == "Bullet") or (s1 == "Key" and s2 == "Bullet") then
+        tileMap:destroy()
+        tileMap = TileMap:new(tileMapData[currentLevel])
+        tileMap.world:setCallbacks(collisionCallback)
+    end
+    if (s1 == "Player" and s2 == "Fire") or (s1 == "Fire" and s2 == "Player") then
+        tileMap:destroy()
+        tileMap = TileMap:new(tileMapData[currentLevel])
+        tileMap.world:setCallbacks(collisionCallback)
     end
 end
 
