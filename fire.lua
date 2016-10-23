@@ -11,12 +11,15 @@ Fire = {}
         Fire.direction.left  = 0x04
         Fire.direction.right = 0x08
 
+    -- Fire.leeway = 1.2
+    Fire.leeway = 1.4
+
     function Fire:new(tileMap, x, y, direction)
         local instance = {}
             setmetatable(instance, self.metaTable)
             -- Create the Box2D bullet object:
             instance.body    = love.physics.newBody(tileMap.world, x, y, "dynamic")
-            instance.shape   = love.physics.newRectangleShape(32, 32)
+            instance.shape   = love.physics.newRectangleShape(32 - instance.leeway, 32 - instance.leeway)
             instance.fixture = love.physics.newFixture(instance.body, instance.shape)
             -- Must collide with walls and player:
             instance.fixture:setFilterData(collision.fire, collision.wall + collision.player + collision.door, 0)
