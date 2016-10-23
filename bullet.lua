@@ -35,10 +35,10 @@ Bullet = {}
         local x = self.body:getX()
         local y = self.body:getY()
 
-        if x < 64 or x > 32 * 18 then
+        if x < 0 or x > 32 * 20 then
             return true
         end
-        if y < 64 or y > 32 * 18 then
+        if y < 0 or y > 32 * 20 then
             return true
         end
 

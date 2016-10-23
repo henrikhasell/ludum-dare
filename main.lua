@@ -32,7 +32,7 @@ function love.load()
             input.key.left  = false
             input.key.right = false
 
-    currentLevel = 4
+    currentLevel = 1
 
     -- 0: Empty space.
     -- 1: Wall.
