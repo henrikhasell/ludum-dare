@@ -1,6 +1,8 @@
 require("utilities")
+require("wall")
 require("player")
 require("turret")
+require("exit")
 require("door")
 require("fire")
 require("key")
@@ -76,15 +78,7 @@ TileMap = {}
 
     function TileMap:addWall(x, y)
         self.spriteBatch:add(textures.quads.tile, x - 16, y - 16)
-
-        local wall = {}
-            wall.body    = love.physics.newBody(self.world, x, y, "static")
-            wall.shape   = love.physics.newRectangleShape(32, 32)
-            wall.fixture = love.physics.newFixture(wall.body, wall.shape)
-
-            wall.fixture:setFilterData(collision.wall, collision.player + collision.fire, 0)
-            wall.fixture:setUserData("Wall")
-
+        local wall = Wall:new(self, x, y)
         table.insert(self.walls, wall)
     end
 
@@ -97,16 +91,8 @@ TileMap = {}
     end
 
     function TileMap:addExit(x, y)
-
         self.spriteBatch:add(textures.quads.exit, x - 16, y - 16)
-
-        local exit = {}
-            exit.body    = love.physics.newBody(self.world, x, y, "static")
-            exit.shape   = love.physics.newRectangleShape(32, 32)
-            exit.fixture = love.physics.newFixture(exit.body, exit.shape)
-
-            exit.fixture:setFilterData(collision.exit, collision.player, 0)
-            exit.fixture:setUserData("Exit")
+        local exit = Exit:new(self, x, y)
     end
 
     function TileMap:addTurret(x, y)
