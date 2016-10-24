@@ -11,7 +11,6 @@ Fire = {}
         Fire.direction.left  = 0x04
         Fire.direction.right = 0x08
 
-    -- Fire.leeway = 1.2
     Fire.leeway = 1.4
 
     function Fire:new(tileMap, x, y, direction)
