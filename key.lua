@@ -1,4 +1,6 @@
-Key = {}
+require("physics")
+
+Key = PhysicsObject:new()
 
     Key.metaTable = {}
         Key.metaTable.__index = Key

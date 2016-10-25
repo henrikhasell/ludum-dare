@@ -1,4 +1,6 @@
-Door = {}
+require("physics")
+
+Door = PhysicsObject:new()
 
     Door.metaTable = {}
         Door.metaTable.__index = Door

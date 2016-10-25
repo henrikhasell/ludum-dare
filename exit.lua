@@ -1,4 +1,6 @@
-Exit = {}
+require("physics")
+
+Exit = PhysicsObject:new()
 
     Exit.metaTable = {}
         Exit.metaTable.__index = Exit
@@ -12,6 +14,7 @@ Exit = {}
             instance.fixture = love.physics.newFixture(instance.body, instance.shape)
 
             instance.fixture:setFilterData(collision.exit, collision.player, 0)
+            instance.fixture:setSensor(true)
             instance.fixture:setUserData("Exit")
 
         return instance

@@ -1,4 +1,6 @@
-Bullet = {}
+require("physics")
+
+Bullet = PhysicsObject:new()
 
     Bullet.metaTable = {}
         Bullet.metaTable.__index = Bullet
@@ -20,11 +22,10 @@ Bullet = {}
             instance.body    = love.physics.newBody(tileMap.world, x, y, "dynamic")
             instance.shape   = love.physics.newCircleShape(8)
             instance.fixture = love.physics.newFixture(instance.body, instance.shape)
-            -- Set the linear velocity of the bullet:
+            -- Configure the Box2D bullet:
             instance.body:setLinearVelocity(velocity.x, velocity.y)
-            -- Set the bullet to only collide with the player:
             instance.fixture:setFilterData(collision.bullet, collision.player, 0)
-            -- Used for collision handling logic:
+            instance.fixture:setSensor(true)
             instance.fixture:setUserData("Bullet")
 
         return instance

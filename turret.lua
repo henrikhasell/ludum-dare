@@ -1,6 +1,7 @@
+require("physics")
 require("bullet")
 
-Turret = {}
+Turret = PhysicsObject:new()
 
     Turret.metaTable = {}
         Turret.metaTable.__index = Turret

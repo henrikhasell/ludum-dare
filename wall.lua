@@ -1,4 +1,6 @@
-Wall = {}
+require("physics")
+
+Wall = PhysicsObject:new()
 
     Wall.metaTable = {}
         Wall.metaTable.__index = Wall 
