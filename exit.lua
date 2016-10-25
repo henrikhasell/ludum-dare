@@ -1,4 +1,5 @@
 require("physics")
+-- require("levels")
 
 Exit = PhysicsObject:new()
 
@@ -15,7 +16,13 @@ Exit = PhysicsObject:new()
 
             instance.fixture:setFilterData(collision.exit, collision.player, 0)
             instance.fixture:setSensor(true)
-            instance.fixture:setUserData("Exit")
+            instance.fixture:setUserData(instance)
 
         return instance
+    end
+
+    function Exit:collision(tileMap, object)
+        tileMap:destroy()
+        currentLevel = currentLevel + 1
+        tileMap:initialise(tileMapData[currentLevel])
     end

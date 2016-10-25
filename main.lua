@@ -214,30 +214,10 @@ function love.update(dt)
 end
 
 function collisionCallback(fixture1, fixture2, collision)
-    local s1 = fixture1:getUserData()
-    local s2 = fixture2:getUserData()
-
---    if (s1 == "Player" and s2 == "Exit") or (s1 == "Exit" and s2 == "Player") then
---        tileMap:destroy()
---        currentLevel = currentLevel + 1
---        tileMap = TileMap:new(tileMapData[currentLevel])
---        tileMap.world:setCallbacks(collisionCallback)
---    end
---
---    if (s1 == "Player" and s2 == "Key") or (s1 == "Key" and s2 == "Player") then
---        tileMap:removeKey(s1 == "Key" and fixture1 or fixture2)
---    end
---
---    if (s1 == "Player" and s2 == "Bullet") or (s1 == "Key" and s2 == "Bullet") then
---        tileMap:destroy()
---        tileMap = TileMap:new(tileMapData[currentLevel])
---        tileMap.world:setCallbacks(collisionCallback)
---    end
---    if (s1 == "Player" and s2 == "Fire") or (s1 == "Fire" and s2 == "Player") then
---        tileMap:destroy()
---        tileMap = TileMap:new(tileMapData[currentLevel])
---        tileMap.world:setCallbacks(collisionCallback)
---    end
+    local object1 = fixture1:getUserData()
+    local object2 = fixture2:getUserData()
+    object1:collision(tileMap, object2)
+    object2:collision(tileMap, object1)
 end
 
 function love.draw()

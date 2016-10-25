@@ -14,7 +14,11 @@ Wall = PhysicsObject:new()
             instance.fixture = love.physics.newFixture(instance.body, instance.shape)
 
             instance.fixture:setFilterData(collision.door, collision.player + collision.fire, 0)
-            instance.fixture:setUserData("Wall")
+            instance.fixture:setUserData(instance)
 
         return instance
+    end
+
+    function Wall:getName()
+        return "Wall"
     end

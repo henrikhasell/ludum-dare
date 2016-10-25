@@ -17,6 +17,10 @@ PhysicsObject = {}
 
     end
 
-    function PhysicsObject:collision(other)
+    function PhysicsObject:collision(tileMap, object)
 
+    end
+
+    function PhysicsObject:getName()
+        return "PhysicsObject"
     end

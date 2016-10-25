@@ -18,7 +18,7 @@ Turret = PhysicsObject:new()
             instance.fixture = love.physics.newFixture(instance.body, instance.shape)
 
             instance.fixture:setFilterData(collision.turret, collision.player, 0)
-            instance.fixture:setUserData("Turret")
+            instance.fixture:setUserData(instance)
 
         return instance
     end
@@ -32,7 +32,9 @@ Turret = PhysicsObject:new()
         local visible = true
 
         local function callback(fixture)
-            visible = fixture:getUserData() ~= "Wall" and fixture:getUserData() ~= "Door"
+
+            visible = fixture:getUserData().metaTable ~= Wall.metaTable
+                  and fixture:getUserData().metaTable ~= Door.metaTable
             return visible and -1 or 0
         end
 

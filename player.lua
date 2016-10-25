@@ -1,4 +1,6 @@
-Player = {}
+require("physics")
+
+Player = PhysicsObject:new()
 
     Player.metaTable = {}
         Player.metaTable.__index = Player
@@ -16,7 +18,7 @@ Player = {}
             -- So that the player does not move slowly in tight spaces:
             instance.fixture:setFriction(0)
             -- Used for collision handling logic:
-            instance.fixture:setUserData("Player")
+            instance.fixture:setUserData(instance)
 
         return instance
     end
@@ -47,4 +49,8 @@ Player = {}
         end
 
         self.body:setLinearVelocity(velocity.x, velocity.y)
+    end
+
+    function Player:getName()
+        return "Player"
     end

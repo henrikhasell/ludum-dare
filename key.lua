@@ -14,7 +14,7 @@ Key = PhysicsObject:new()
             instance.fixture = love.physics.newFixture(instance.body, instance.shape)
 
             instance.fixture:setFilterData(collision.key, collision.player, 0)
-            instance.fixture:setUserData("Key")
+            instance.fixture:setUserData(instance)
             instance.fixture:setSensor(true)
 
         return instance

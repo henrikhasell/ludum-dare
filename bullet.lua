@@ -26,7 +26,7 @@ Bullet = PhysicsObject:new()
             instance.body:setLinearVelocity(velocity.x, velocity.y)
             instance.fixture:setFilterData(collision.bullet, collision.player, 0)
             instance.fixture:setSensor(true)
-            instance.fixture:setUserData("Bullet")
+            instance.fixture:setUserData(instance)
 
         return instance
     end

@@ -29,7 +29,7 @@ Fire = {}
             -- Floating point errors require this:
             instance.body:setFixedRotation(true)
             -- Used for collision handling logic:
-            instance.fixture:setUserData("Fire")
+            instance.fixture:setUserData(instance)
             -- Set the linear velocity:
             instance:setDirection(direction)
         return instance
