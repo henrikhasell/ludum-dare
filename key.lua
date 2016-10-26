@@ -28,3 +28,7 @@ Key = PhysicsObject:new()
 
         tileMap.keys[self] = null
     end
+
+    function Key:collision(object)
+        tileMap:removeKey(self)
+    end

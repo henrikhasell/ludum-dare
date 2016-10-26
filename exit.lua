@@ -21,8 +21,9 @@ Exit = PhysicsObject:new()
         return instance
     end
 
-    function Exit:collision(tileMap, object)
+    function Exit:collision(object)
         tileMap:destroy()
         currentLevel = currentLevel + 1
-        tileMap:initialise(tileMapData[currentLevel])
+        tileMap = TileMap:new(tileMapData[currentLevel])
+        tileMap.world:setCallbacks(collisionCallback)
     end

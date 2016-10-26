@@ -55,3 +55,9 @@ Bullet = PhysicsObject:new()
         love.graphics.circle("line", x, y, r)
         love.graphics.setColor(255, 255, 255)
     end
+
+    function Bullet:collision(object)
+        tileMap:destroy()
+        tileMap = TileMap:new(tileMapData[currentLevel])
+        tileMap.world:setCallbacks(collisionCallback)
+    end

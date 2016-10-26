@@ -216,8 +216,8 @@ end
 function collisionCallback(fixture1, fixture2, collision)
     local object1 = fixture1:getUserData()
     local object2 = fixture2:getUserData()
-    object1:collision(tileMap, object2)
-    object2:collision(tileMap, object1)
+    object1:collision(object2)
+    object2:collision(object1)
 end
 
 function love.draw()

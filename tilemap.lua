@@ -173,7 +173,7 @@ TileMap = {}
     function TileMap:removeKey(key)
         -- Perform a linear search for the key:
         for index, value in pairs(tileMap.keys) do
-            if key == value.fixture then
+            if key == value then
                 -- Remove the key from the tile map:
                 local key = table.remove(tileMap.keys, index)
                 -- Destroy the key body:

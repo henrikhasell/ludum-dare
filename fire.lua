@@ -1,4 +1,6 @@
-Fire = {}
+require("physics")
+
+Fire = PhysicsObject:new()
 
     Fire.metaTable = {}
         Fire.metaTable.__index = Fire 
