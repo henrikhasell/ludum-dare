@@ -201,16 +201,23 @@ function love.load()
     }
 
     tileMap = TileMap:new(tileMapData[currentLevel])
+    lastTimeStep = 0
+    timeStep = 1/60
 
     tileMap.world:setCallbacks(collisionCallback)
 end
 
 function love.update(dt)
+    lastTimeStep = lastTimeStep + dt
+
     for key, value in pairs(input.key) do
         input.key[key] = love.keyboard.isDown(key)
     end
 
-    tileMap:update(dt)
+    while lastTimeStep >= timeStep do
+        lastTimeStep = lastTimeStep - timeStep
+        tileMap:update(timeStep)
+    end
 end
 
 function collisionCallback(fixture1, fixture2, collision)
