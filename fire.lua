@@ -85,3 +85,11 @@ Fire = PhysicsObject:new()
         love.graphics.polygon("fill", self.body:getWorldPoints(self.shape:getPoints()))
         love.graphics.setColor(255, 255, 255)
     end
+
+    function Fire:collision(object)
+        if object:getName() == "Player" then
+            tileMap:destroy()
+            tileMap = TileMap:new(tileMapData[currentLevel])
+            tileMap.world:setCallbacks(collisionCallback)
+        end
+    end
