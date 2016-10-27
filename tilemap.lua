@@ -5,6 +5,7 @@ require("turret")
 require("exit")
 require("door")
 require("fire")
+require("chain")
 require("key")
 
 TileMap = {}
@@ -27,6 +28,7 @@ TileMap = {}
             instance.world   = love.physics.newWorld()
             instance.turrets = {}
             instance.bullets = {}
+            instance.chains  = {}
             instance.walls   = {}
             instance.doors   = {}
             instance.fires   = {}
@@ -72,6 +74,9 @@ TileMap = {}
                 if v2 == 8 then
                     self:addFire(x, y, Fire.direction.right)
                 end
+                if v2 == 9 then
+                    self:addChain(x, y)
+                end
             end
         end
     end
@@ -115,6 +120,11 @@ TileMap = {}
         table.insert(self.fires, fire);
     end
 
+    function TileMap:addChain(x, y, horizontal)
+        local chain = Chain:new(self, x, y)
+        table.insert(self.chains, chain);
+    end
+
     function TileMap:draw()
         love.graphics.draw(self.spriteBatch)
 
@@ -138,6 +148,10 @@ TileMap = {}
             value:draw()
         end
 
+        for key, value in pairs(self.chains) do
+            value:draw()
+        end
+
         if self.player then
             self.player:draw()
         end
@@ -151,6 +165,10 @@ TileMap = {}
         -- Perform logic on all turrets.
         for key, value in pairs(self.turrets) do
             value:update(self, dt)
+        end
+        -- Perform logic on all chains.
+        for key, value in pairs(self.chains) do
+            value:update(dt)
         end
         -- Perform logic on all bullets.
         local count = 1
@@ -203,7 +221,12 @@ TileMap = {}
         -- Remove all objects.
         self.turrets = {}
         self.bullets = {}
-        self.walls = {}
+        self.chains  = {}
+        self.walls   = {}
+        self.doors   = {}
+        self.fires   = {}
+        self.keys    = {}
+
 
     end
 
