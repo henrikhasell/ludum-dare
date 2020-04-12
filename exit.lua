@@ -1,7 +1,8 @@
 require("physics")
 -- require("levels")
 
-Exit = PhysicsObject:new()
+Exit = {}
+    setmetatable(Exit, { __index = PhysicsObject })
 
     Exit.metaTable = {}
         Exit.metaTable.__index = Exit

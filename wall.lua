@@ -1,6 +1,7 @@
 require("physics")
 
-Wall = PhysicsObject:new()
+Wall = {}
+    setmetatable(Wall, { __index = PhysicsObject })
 
     Wall.metaTable = {}
         Wall.metaTable.__index = Wall 
@@ -13,7 +14,7 @@ Wall = PhysicsObject:new()
             instance.shape   = love.physics.newRectangleShape(32, 32)
             instance.fixture = love.physics.newFixture(instance.body, instance.shape)
 
-            instance.fixture:setFilterData(collision.door, collision.player + collision.fire, 0)
+            instance.fixture:setFilterData(collision.door, collision.player + collision.fire + collision.ghost, 0)
             instance.fixture:setUserData(instance)
 
         return instance

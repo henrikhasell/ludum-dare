@@ -1,17 +1,19 @@
 require("physics")
 require("bullet")
 
-Turret = PhysicsObject:new()
-
-    Turret.metaTable = {}
-        Turret.metaTable.__index = Turret
+Turret = {}
+    setmetatable(Turret, {
+        __index = PhysicsObject
+    })
 
     Turret.cooldown = 0.1
     Turret.rotation = 0
 
     function Turret:new(tileMap, x, y)
         local instance = {}
-            setmetatable(instance, self.metaTable)
+            setmetatable(instance, {
+                __index = Turret
+	    })
 
             instance.body    = love.physics.newBody(tileMap.world, x, y, "static")
             instance.shape   = love.physics.newRectangleShape(32, 32)
@@ -25,7 +27,7 @@ Turret = PhysicsObject:new()
 
     function Turret:fireBullet(tileMap)
         local bullet = Bullet:new(self, tileMap)
-        table.insert(tileMap.bullets, bullet)
+	bullet:setRotation(self.rotation)
     end
 
     function Turret:observe(tileMap, target)
@@ -50,12 +52,12 @@ Turret = PhysicsObject:new()
     end
 
     function Turret:update(tileMap, dt)
-
         local target = tileMap.player
 
-        local relativePosition = {}
-            relativePosition.x = target.body:getX() - self.body:getX()
-            relativePosition.y = target.body:getY() - self.body:getY()
+        local relativePosition = {
+            x = target.body:getX() - self.body:getX(),
+            y = target.body:getY() - self.body:getY()
+	}
 
         self.rotation = math.atan2(relativePosition.y, relativePosition.x)
 

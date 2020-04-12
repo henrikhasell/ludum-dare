@@ -1,20 +1,18 @@
 require("physics")
 
-Player = PhysicsObject:new()
-
-    Player.metaTable = {}
-        Player.metaTable.__index = Player
+Player = {}
+    setmetatable(Player, { __index = PhysicsOject })
 
     Player.speed = 200
 
     function Player:new(tileMap, x, y)
         local instance = {}
-            setmetatable(instance, self.metaTable)
+            setmetatable(instance, { __index = Player })
             instance.body    = love.physics.newBody(tileMap.world, x, y, "dynamic")
             instance.shape   = love.physics.newCircleShape(16)
             instance.fixture = love.physics.newFixture(instance.body, instance.shape)
             -- So that the player collides with everything:
-            instance.fixture:setFilterData(collision.player, 0xff, 0)
+            instance.fixture:setFilterData(collision.player, 0xfff, 0)
             -- So that the player does not move slowly in tight spaces:
             instance.fixture:setFriction(0)
             -- Used for collision handling logic:
@@ -53,4 +51,7 @@ Player = PhysicsObject:new()
 
     function Player:getName()
         return "Player"
+    end
+
+    function Player:collision(object)
     end

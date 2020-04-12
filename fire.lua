@@ -1,6 +1,7 @@
 require("physics")
 
-Fire = PhysicsObject:new()
+Fire = {}
+    setmetatable(Fire, { __index = PhysicsObject })
 
     Fire.metaTable = {}
         Fire.metaTable.__index = Fire 
@@ -86,10 +87,9 @@ Fire = PhysicsObject:new()
         love.graphics.setColor(255, 255, 255)
     end
 
-    function Fire:collision(object)
+    function Fire:collision(tileMap, object)
         if object:getName() == "Player" then
             tileMap:destroy()
-            tileMap = TileMap:new(tileMapData[currentLevel])
-            tileMap.world:setCallbacks(collisionCallback)
+	    loadLevel(currentLevel)
         end
     end

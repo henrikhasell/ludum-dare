@@ -7,6 +7,7 @@ require("door")
 require("fire")
 require("chain")
 require("key")
+require("ghost")
 
 TileMap = {}
 
@@ -18,21 +19,23 @@ TileMap = {}
             setmetatable(instance, self.metaTable)
 
             -- Calculate the width/height of the map:
-            local w = #tileMapData[1]
-            local h = #tileMapData
+            local w = #tileMapData.tiles[1]
+            local h = #tileMapData.tiles
 
             -- Variables for rendering:
             instance.spriteBatch = love.graphics.newSpriteBatch(textures.spriteSheet, w * h)
 
             -- Variables for physical world:
-            instance.world   = love.physics.newWorld()
-            instance.turrets = {}
-            instance.bullets = {}
-            instance.chains  = {}
-            instance.walls   = {}
-            instance.doors   = {}
-            instance.fires   = {}
-            instance.keys    = {}
+            instance.world         = love.physics.newWorld()
+            instance.turrets       = {}
+            instance.bullets       = {}
+            instance.chains        = {}
+            instance.walls         = {}
+            instance.doors         = {}
+            instance.fires         = {}
+            instance.keys          = {}
+	    instance.objects       = {}
+	    instance.ghosts        = {}
 
             -- Load tiles:
             instance:initialise(tileMapData)
@@ -42,7 +45,7 @@ TileMap = {}
     end
 
     function TileMap:initialise(tileMapData)
-        for k1,v1 in pairs(tileMapData) do
+        for k1,v1 in pairs(tileMapData.tiles) do
             for k2,v2 in pairs(v1) do
                 -- World position derived from coordinates:
                 x, y = utilities.getPosition(k2, k1)
@@ -77,6 +80,27 @@ TileMap = {}
                 if v2 == 9 then
                     self:addChain(x, y)
                 end
+            end
+        end
+        if tileMapData.objects then
+            for _,object in pairs(tileMapData.objects) do
+                if object.name == "ghost" then
+		    self:addGhost(
+                        object.position.x,
+                        object.position.y
+                    )
+		end
+                if object.name == "ghost_keys" then
+                    -- for _,position in pairs(object.positions) do
+		    --     self:addKey(
+                    --         position.x,
+                    --         position.y
+                    --     )
+		    -- end
+		    self:addGhostKeyManager(
+                        object.positions
+                    )
+		end
             end
         end
     end
@@ -125,11 +149,26 @@ TileMap = {}
         table.insert(self.chains, chain);
     end
 
+    function TileMap:addGhost(x, y)
+        local ghost = Ghost:new(self, x, y)
+        table.insert(self.ghosts, ghost);
+    end
+
+    function TileMap:addGhostKey(manager, x, y)
+        local ghost_key = GhostKey:new(self, manager, x, y)
+        table.insert(self.objects, ghost_key);
+    end
+
+    function TileMap:addGhostKeyManager(positions)
+        local ghost_key_manager = GhostKeyManager:new(self, positions)
+        table.insert(self.objects, ghost_key_manager);
+    end
+
     function TileMap:draw()
         love.graphics.draw(self.spriteBatch)
 
         for key, value in pairs(self.turrets) do
-            -- TODO: Render turrets.
+            value:draw()
         end
 
         for key, value in pairs(self.doors) do
@@ -149,6 +188,14 @@ TileMap = {}
         end
 
         for key, value in pairs(self.chains) do
+            value:draw()
+        end
+
+        for key, value in pairs(self.objects) do
+            value:draw()
+        end
+
+        for key, value in pairs(self.ghosts) do
             value:draw()
         end
 
@@ -182,6 +229,13 @@ TileMap = {}
                 count = count + 1
             end
         end
+        -- Perform logic on all objects.
+        for key, value in pairs(self.objects) do
+            value:update(self, dt)
+        end
+        for key, value in pairs(self.ghosts) do
+            value:update(self, dt)
+        end
         -- Perform physics time-step.
         if not self.world:isDestroyed() then
             self.world:update(dt)
@@ -190,10 +244,10 @@ TileMap = {}
 
     function TileMap:removeKey(key)
         -- Perform a linear search for the key:
-        for index, value in pairs(tileMap.keys) do
+        for index, value in pairs(self.keys) do
             if key == value then
                 -- Remove the key from the tile map:
-                local key = table.remove(tileMap.keys, index)
+                local key = table.remove(self.keys, index)
                 -- Destroy the key body:
                 key.body:destroy()
                 break
@@ -201,14 +255,33 @@ TileMap = {}
         end
 
         -- Check if all of the keys have been collected:
-        if #tileMap.keys == 0 then
+        if #self.keys == 0 then
             -- Remove every door from the level:
-            while #tileMap.doors ~= 0 do
+            while #self.doors ~= 0 do
                 local door = table.remove(tileMap.doors)
                 door.body:destroy()
             end
         end
+    end
 
+    function TileMap:removeObject(object)
+        for index, value in pairs(self.objects) do
+            if object == value then
+                local object = table.remove(self.objects, index)
+                object.body:destroy()
+		return
+            end
+        end
+    end
+
+    function TileMap:removeBullet(object)
+        for index, value in pairs(self.bullets) do
+            if object == value then
+                local object = table.remove(self.bullets, index)
+                object.body:destroy()
+		return
+            end
+        end
     end
 
     function TileMap:destroy()
@@ -219,15 +292,15 @@ TileMap = {}
         -- Remove the player.
         self.player = null
         -- Remove all objects.
-        self.turrets = {}
-        self.bullets = {}
-        self.chains  = {}
-        self.walls   = {}
-        self.doors   = {}
-        self.fires   = {}
-        self.keys    = {}
-
-
+        self.turrets       = {}
+        self.bullets       = {}
+        self.chains        = {}
+        self.walls         = {}
+        self.doors         = {}
+        self.fires         = {}
+        self.keys          = {}
+        self.objects       = {}
+        self.ghosts        = {}
     end
 
     function TileMap:speak()

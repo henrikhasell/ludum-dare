@@ -1,19 +1,10 @@
 PhysicsObject = {}
 
-    PhysicsObject.metaTable = {}
-        PhysicsObject.metaTable.__index = PhysicsObject 
-
-    function PhysicsObject:new()
-        local instance = {}
-            setmetatable(instance, self.metaTable)
-        return instance
-    end
-
     function PhysicsObject:draw()
 
     end
 
-    function PhysicsObject:update(dt)
+    function PhysicsObject:update(tileMap, dt)
 
     end
 
