@@ -10,6 +10,9 @@ function love.load()
     textures = {}
         -- Load the main sprite sheet.
         textures.spriteSheet = love.graphics.newImage("Assets/Exported/SpriteSheet.png")
+        textures.rocket = love.graphics.newImage("Assets/Exported/Rocket.png")
+        textures.turret = love.graphics.newImage("Assets/Exported/Turret.png")
+        textures.nozzle = love.graphics.newImage("Assets/Exported/Nozzle.png")
         textures.spriteSheet:setFilter("nearest")
         -- Define quads for each sprite on the sheet.
         textures.quads = {}
@@ -31,6 +34,16 @@ function love.load()
         collision.key    = 0x080
         collision.ghost  = 0x100
 
+    local particle_speed = 20
+    local particle_lifetime = 1
+    particle = love.graphics.newImage('Assets/Exported/Smoke.png')
+    particleSystem = love.graphics.newParticleSystem(particle, 1000)
+    particleSystem:setParticleLifetime(particle_lifetime, particle_lifetime)
+    particleSystem:setEmissionRate(50)
+    particleSystem:setSizeVariation(1)
+    particleSystem:setLinearAcceleration(-particle_speed, -particle_speed, particle_speed, particle_speed)
+    particleSystem:setColors(1, 1, 1, 1, 1, 1, 1, 0) -- Fade to transparency.
+
     input = {}
         input.key = {}
             input.key.up    = false
@@ -38,7 +51,7 @@ function love.load()
             input.key.left  = false
             input.key.right = false
 
-    currentLevel = 6
+    currentLevel = 1
 
     -- 0: Empty space.
     -- 1: Wall.
@@ -300,6 +313,9 @@ function love.update(dt)
         lastTimeStep = lastTimeStep - timeStep
         tileMap:update(timeStep)
     end
+
+    -- particleSystem:setPosition(tileMap.player.body:getX(), tileMap.player.body:getY())
+    particleSystem:update(dt)
 end
 
 function collisionCallback(fixture1, fixture2, collision)
@@ -311,4 +327,5 @@ end
 
 function love.draw()
     tileMap:draw()
+    love.graphics.draw(particleSystem, 0, 0)
 end

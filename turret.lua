@@ -27,6 +27,12 @@ Turret = {}
 
     function Turret:fireBullet(tileMap)
         local bullet = Bullet:new(self, tileMap)
+	local nozzle_length = 20
+	local position = {
+            x = self.body:getX() + math.cos(self.rotation) * nozzle_length,
+            y = self.body:getY() + math.sin(self.rotation) * nozzle_length
+	}
+	bullet.body:setPosition(position.x, position.y)
 	bullet:setRotation(self.rotation)
     end
 
@@ -69,4 +75,11 @@ Turret = {}
         else
             self.cooldown = self.cooldown - dt
         end
+    end
+
+    function Turret:draw()
+        local x = self.body:getX()
+	local y = self.body:getY()
+        love.graphics.draw(textures.turret, x, y, 0, 1, 1, 16, 16)
+        love.graphics.draw(textures.nozzle, x, y, self.rotation + math.pi / 2, 1, 1, 16, 16)
     end

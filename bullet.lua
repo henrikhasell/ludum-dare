@@ -12,7 +12,9 @@ Bullet = {}
         local x = turret.body:getX()
         local y = turret.body:getY()
 
-        local instance = {}
+        local instance = {
+            position_list = {}
+	}
         setmetatable(instance, {
             __index = Bullet
 	})
@@ -59,14 +61,13 @@ Bullet = {}
         local y = self.body:getY()
         local r = self.shape:getRadius()
 
-        love.graphics.setColor(0, 0, 255)
-        love.graphics.circle("line", x, y, r)
-        love.graphics.setColor(255, 255, 255)
+	love.graphics.draw(textures.rocket, x, y, self.body:getAngle() + math.pi / 2, 1, 1, 16, 16)
     end
 
     function Bullet:collision(tileMap, object)
         tileMap:destroy()
 	loadLevel(currentLevel)
-        -- tileMap:new(tileMapData[currentLevel])
-        -- tileMap.world:setCallbacks(collisionCallback)
+    end
+
+    function Bullet:update(tileMap, dt)
     end

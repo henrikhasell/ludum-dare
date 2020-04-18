@@ -226,6 +226,7 @@ TileMap = {}
             if bullet:finished() then
                 table.remove(self.bullets, count)
             else
+	        bullet:update()
                 count = count + 1
             end
         end

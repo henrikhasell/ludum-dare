@@ -37,7 +37,6 @@ setmetatable(Chain, { __index = PhysicsOject })
         link.fixture = love.physics.newFixture(link.body, link.shape)
         link.fixture:setFilterData(collision.bullet, collision.player, 0)
         link.fixture:setUserData(instance)
-        link.fixture:setSensor(true)
 
         function link:draw()
             local x = self.body:getX()
@@ -49,7 +48,6 @@ setmetatable(Chain, { __index = PhysicsOject })
         end
 
         function link:collision(tileMap, object)
-	    print("Link collision")
             tileMap:destroy()
 	    loadLevel(currentLevel)
         end
@@ -79,5 +77,5 @@ setmetatable(Chain, { __index = PhysicsOject })
     end
 
     function Chain:collision(tileMap, other)
-
+        -- Empty.
     end
