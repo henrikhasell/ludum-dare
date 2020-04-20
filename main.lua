@@ -10,9 +10,10 @@ function love.load()
     textures = {}
         -- Load the main sprite sheet.
         textures.spriteSheet = love.graphics.newImage("Assets/Exported/SpriteSheet.png")
-        textures.rocket = love.graphics.newImage("Assets/Exported/Rocket.png")
+        textures.rocket = love.graphics.newImage("Assets/Exported/RocketSpriteSheet.png")
         textures.turret = love.graphics.newImage("Assets/Exported/Turret.png")
         textures.nozzle = love.graphics.newImage("Assets/Exported/Nozzle.png")
+        textures.nozzle_blast = love.graphics.newImage("Assets/Exported/NozzleBlast.png")
         textures.spriteSheet:setFilter("nearest")
         -- Define quads for each sprite on the sheet.
         textures.quads = {}
@@ -22,6 +23,12 @@ function love.load()
             textures.quads.player = love.graphics.newQuad(32 * 3, 32 * 0, 32, 32, 32 * 4, 32 * 4)
             textures.quads.door   = love.graphics.newQuad(32 * 0, 32 * 1, 32, 32, 32 * 4, 32 * 4)
             textures.quads.key    = love.graphics.newQuad(32 * 1, 32 * 1, 32, 32, 32 * 4, 32 * 4)
+        textures.quads.rocketAnimation = {
+            love.graphics.newQuad(32 * 0, 32 * 0, 32, 32, 32 * 2, 32 * 2),
+            love.graphics.newQuad(32 * 1, 32 * 0, 32, 32, 32 * 2, 32 * 2),
+            love.graphics.newQuad(32 * 0, 32 * 1, 32, 32, 32 * 2, 32 * 2),
+            love.graphics.newQuad(32 * 1, 32 * 1, 32, 32, 32 * 2, 32 * 2)
+        }
 
     collision = {}
         collision.player = 0x001
@@ -51,7 +58,7 @@ function love.load()
             input.key.left  = false
             input.key.right = false
 
-    currentLevel = 1
+    currentLevel = 9
 
     -- 0: Empty space.
     -- 1: Wall.

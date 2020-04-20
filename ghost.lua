@@ -1,4 +1,5 @@
 require("bullet")
+require('health')
 require("key")
 require("physics")
 require("turret")
@@ -21,6 +22,7 @@ function Ghost:new(tileMap, x, y)
     instance.fixture:setUserData(instance)
     instance.stage = 0
     instance.bullet_cooldown = 0
+    instance.health_bar_display = 0
     instance:resetCooldown()
 
     return instance
@@ -67,6 +69,13 @@ function Ghost:draw()
     local y = self.body:getY()
     local radius = self.shape:getRadius()
     love.graphics.draw(textures.spriteSheet, textures.quads.player, x, y, 0, 1, 1, radius, radius)
+    if self.health_bar_display > 0 then
+        draw_health_bar(x, y - 25, 0.5)
+    end
+end
+
+function Ghost:damage()
+    self.health_bar_display = 2
 end
 
 function Ghost:update(tileMap, dt)
@@ -75,6 +84,7 @@ function Ghost:update(tileMap, dt)
 
     self.cooldown = self.cooldown - dt
     self.bullet_cooldown = self.bullet_cooldown - dt
+    self.health_bar_display = self.health_bar_display - dt
 
     if self.cooldown <= 0 then
         self:nextStage()
@@ -103,8 +113,10 @@ function GhostKiller:new(tileMap, player, ghost)
     return instance
 end
 
-function GhostKiller:collision(object)
+function GhostKiller:collision(tileMap, object)
     tileMap:removeBullet(self)
+    print('Ghost killer hit ' .. object:getName())
+    object:damage()
 end
 
 GhostKey = {}

@@ -13,8 +13,8 @@ Bullet = {}
         local y = turret.body:getY()
 
         local instance = {
-            position_list = {}
-	}
+            i = 1
+	      }
         setmetatable(instance, {
             __index = Bullet
 	})
@@ -26,7 +26,6 @@ Bullet = {}
         instance.fixture:setFilterData(collision.bullet, collision.player, 0)
         instance.fixture:setUserData(instance)
         instance.fixture:setSensor(true)
-
 	table.insert(tileMap.bullets, instance)
 
         return instance
@@ -61,7 +60,9 @@ Bullet = {}
         local y = self.body:getY()
         local r = self.shape:getRadius()
 
-	love.graphics.draw(textures.rocket, x, y, self.body:getAngle() + math.pi / 2, 1, 1, 16, 16)
+	      love.graphics.draw(textures.rocket, textures.quads.rocketAnimation[self.i], x, y, self.body:getAngle() + math.pi / 2, 1, 1, 16, 16)
+        self.i = self.i % #textures.quads.rocketAnimation + 1
+        -- print ('i is ' .. i)
     end
 
     function Bullet:collision(tileMap, object)

@@ -18,6 +18,7 @@ Turret = {}
             instance.body    = love.physics.newBody(tileMap.world, x, y, "static")
             instance.shape   = love.physics.newRectangleShape(32, 32)
             instance.fixture = love.physics.newFixture(instance.body, instance.shape)
+	    instance.nozzle_blast = false
 
             instance.fixture:setFilterData(collision.turret, collision.player, 0)
             instance.fixture:setUserData(instance)
@@ -34,6 +35,7 @@ Turret = {}
 	}
 	bullet.body:setPosition(position.x, position.y)
 	bullet:setRotation(self.rotation)
+	self.nozzle_blast = true
     end
 
     function Turret:observe(tileMap, target)
@@ -82,4 +84,13 @@ Turret = {}
 	local y = self.body:getY()
         love.graphics.draw(textures.turret, x, y, 0, 1, 1, 16, 16)
         love.graphics.draw(textures.nozzle, x, y, self.rotation + math.pi / 2, 1, 1, 16, 16)
+	if self.nozzle_blast then
+	    self.nozzle_blast = false
+            local nozzle_length = 30
+	    local position = {
+                x = self.body:getX() + math.cos(self.rotation) * nozzle_length,
+                y = self.body:getY() + math.sin(self.rotation) * nozzle_length
+	    }
+            love.graphics.draw(textures.nozzle_blast, position.x, position.y, self.rotation + math.pi / 2, 1, 1, 16, 16)
+	end
     end
