@@ -48,8 +48,7 @@ setmetatable(Chain, { __index = PhysicsOject })
         end
 
         function link:collision(tileMap, object)
-            tileMap:destroy()
-	    loadLevel(currentLevel)
+            tileMap:resetLevel()
         end
 
         link.fixture:setUserData(link)

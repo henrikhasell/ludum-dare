@@ -22,9 +22,8 @@ Exit = {}
         return instance
     end
 
-    function Exit:collision(object)
-        tileMap:destroy()
+    function Exit:collision(tileMap, object)
         currentLevel = currentLevel + 1
-        tileMap = TileMap:new(tileMapData[currentLevel])
-        tileMap.world:setCallbacks(collisionCallback)
+        loadLevel(currentLevel)
+        sound_manager:playLevelUpSound()
     end

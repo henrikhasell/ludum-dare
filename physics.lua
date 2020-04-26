@@ -15,3 +15,6 @@ PhysicsObject = {}
     function PhysicsObject:getName()
         return "PhysicsObject"
     end
+
+    function PhysicsObject:destroy()
+    end

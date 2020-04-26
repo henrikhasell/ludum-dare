@@ -11,12 +11,9 @@ require("ghost")
 
 TileMap = {}
 
-    TileMap.metaTable = {}
-        TileMap.metaTable.__index = TileMap
-
     function TileMap:new(tileMapData)
         local instance = {}
-            setmetatable(instance, self.metaTable)
+            setmetatable(instance, {__index = TileMap})
 
             -- Calculate the width/height of the map:
             local w = #tileMapData.tiles[1]
@@ -25,23 +22,26 @@ TileMap = {}
             -- Variables for rendering:
             instance.spriteBatch = love.graphics.newSpriteBatch(textures.spriteSheet, w * h)
 
-            -- Variables for physical world:
-            instance.world         = love.physics.newWorld()
-            instance.turrets       = {}
-            instance.bullets       = {}
-            instance.chains        = {}
-            instance.walls         = {}
-            instance.doors         = {}
-            instance.fires         = {}
-            instance.keys          = {}
-	    instance.objects       = {}
-	    instance.ghosts        = {}
-
-            -- Load tiles:
+            instance:initialiseVariables()
             instance:initialise(tileMapData)
 
         -- Return new TileMap instance:
         return instance
+    end
+
+    function TileMap:initialiseVariables()
+        self.world         = love.physics.newWorld()
+        self.turrets       = {}
+        self.bullets       = {}
+        self.chains        = {}
+        self.walls         = {}
+        self.doors         = {}
+        self.fires         = {}
+        self.keys          = {}
+        self.objects       = {}
+        self.ghosts        = {}
+	self.player        = null
+	self.updateTasks   = {}
     end
 
     function TileMap:initialise(tileMapData)
@@ -204,7 +204,14 @@ TileMap = {}
         end
     end
 
+    function TileMap:processUpdateTasks()
+        while  #self.updateTasks > 0 do
+            self.updateTasks[1]()
+            table.remove(self.updateTasks)
+        end
+    end
     function TileMap:update(dt)
+        self:processUpdateTasks()
         -- Update the player's velocity.
         if self.player then
             self.player:update()
@@ -224,9 +231,10 @@ TileMap = {}
             local bullet = self.bullets[count]
             -- If the bullet is finished then remove it:
             if bullet:finished() then
+                bullet:destroy()
                 table.remove(self.bullets, count)
             else
-	        bullet:update()
+	        bullet:update(dt)
                 count = count + 1
             end
         end
@@ -240,6 +248,14 @@ TileMap = {}
         -- Perform physics time-step.
         if not self.world:isDestroyed() then
             self.world:update(dt)
+        end
+    end
+
+    function TileMap:unlockDoors()
+        -- Remove every door from the level:
+        while #self.doors ~= 0 do
+            local door = table.remove(tileMap.doors)
+            door.body:destroy()
         end
     end
 
@@ -257,11 +273,10 @@ TileMap = {}
 
         -- Check if all of the keys have been collected:
         if #self.keys == 0 then
-            -- Remove every door from the level:
-            while #self.doors ~= 0 do
-                local door = table.remove(tileMap.doors)
-                door.body:destroy()
-            end
+            self:unlockDoors()
+            sound_manager:playUnlockDoorSound()
+        else
+	    sound_manager:playPickupKeySound()
         end
     end
 
@@ -285,23 +300,35 @@ TileMap = {}
         end
     end
 
+    function TileMap:removeGhost(object)
+        for index, value in pairs(self.ghosts) do
+            if object == value then
+                local object = table.remove(self.ghosts, index)
+		break
+            end
+        end
+	if #self.ghosts == 0 then
+	    local x = object.body:getX()
+	    local y = object.body:getY()
+            table.insert(self.updateTasks, function () self:addExit(x, y) end)
+            self:unlockDoors()
+	end
+        object.body:destroy()
+    end
+
     function TileMap:destroy()
         -- Clear the background.
         self.spriteBatch:clear()
         -- Destroy the physics.
         self.world:destroy();
-        -- Remove the player.
-        self.player = null
         -- Remove all objects.
-        self.turrets       = {}
-        self.bullets       = {}
-        self.chains        = {}
-        self.walls         = {}
-        self.doors         = {}
-        self.fires         = {}
-        self.keys          = {}
-        self.objects       = {}
-        self.ghosts        = {}
+	self:initialiseVariables()
+    end
+
+    function TileMap:resetLevel()
+        self:destroy()
+	loadLevel(currentLevel)
+        sound_manager:playDeathSound()
     end
 
     function TileMap:speak()

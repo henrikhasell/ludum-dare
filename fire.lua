@@ -62,20 +62,20 @@ Fire = {}
         self.direction = direction
     end
 
-    function Fire:finished()
-        -- Get the current position:
-        local x = self.body:getX()
-        local y = self.body:getY()
-
-        if x < 64 or x > 32 * 18 then
-            return true
-        end
-        if y < 64 or y > 32 * 18 then
-            return true
-        end
-
-        return false
-    end
+--    function Fire:finished()
+--        -- Get the current position:
+--        local x = self.body:getX()
+--        local y = self.body:getY()
+--
+--        if x < 64 or x > 32 * 18 then
+--            return true
+--        end
+--        if y < 64 or y > 32 * 18 then
+--            return true
+--        end
+--
+--        return false
+--    end
 
     function Fire:draw()
         local x = self.body:getX()
@@ -89,7 +89,6 @@ Fire = {}
 
     function Fire:collision(tileMap, object)
         if object:getName() == "Player" then
-            tileMap:destroy()
-	    loadLevel(currentLevel)
+	    tileMap:resetLevel()
         end
     end

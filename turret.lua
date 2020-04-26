@@ -27,7 +27,7 @@ Turret = {}
     end
 
     function Turret:fireBullet(tileMap)
-        local bullet = Bullet:new(self, tileMap)
+        local bullet = Bullet:new(tileMap, self.body:getX(), self.body:getY())
 	local nozzle_length = 20
 	local position = {
             x = self.body:getX() + math.cos(self.rotation) * nozzle_length,
@@ -36,6 +36,7 @@ Turret = {}
 	bullet.body:setPosition(position.x, position.y)
 	bullet:setRotation(self.rotation)
 	self.nozzle_blast = true
+	sound_manager:playRocketSound()
     end
 
     function Turret:observe(tileMap, target)

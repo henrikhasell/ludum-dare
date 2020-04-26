@@ -7,17 +7,11 @@ Bullet = {}
 
     Bullet.speed = 320
 
-    function Bullet:new(turret, tileMap)
+    function Bullet:new(tileMap, x, y)
 
-        local x = turret.body:getX()
-        local y = turret.body:getY()
+        local instance = {i = 1}
+        setmetatable(instance, {__index = Bullet})
 
-        local instance = {
-            i = 1
-	      }
-        setmetatable(instance, {
-            __index = Bullet
-	})
         -- Create the Box2D bullet object:
         instance.body    = love.physics.newBody(tileMap.world, x, y, "dynamic")
         instance.shape   = love.physics.newCircleShape(8)
@@ -26,6 +20,7 @@ Bullet = {}
         instance.fixture:setFilterData(collision.bullet, collision.player, 0)
         instance.fixture:setUserData(instance)
         instance.fixture:setSensor(true)
+
 	table.insert(tileMap.bullets, instance)
 
         return instance
@@ -66,9 +61,9 @@ Bullet = {}
     end
 
     function Bullet:collision(tileMap, object)
-        tileMap:destroy()
-	loadLevel(currentLevel)
+        tileMap:resetLevel()
     end
 
     function Bullet:update(tileMap, dt)
+        -- Do nothing.
     end

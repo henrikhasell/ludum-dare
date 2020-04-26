@@ -1,4 +1,5 @@
 require("tilemap")
+require("sound")
 
 function loadLevel(level)
     tileMap = TileMap:new(tileMapData[level])
@@ -29,6 +30,8 @@ function love.load()
             love.graphics.newQuad(32 * 0, 32 * 1, 32, 32, 32 * 2, 32 * 2),
             love.graphics.newQuad(32 * 1, 32 * 1, 32, 32, 32 * 2, 32 * 2)
         }
+
+    sound_manager = SoundManager:new()
 
     collision = {}
         collision.player = 0x001

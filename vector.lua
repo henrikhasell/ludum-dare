@@ -13,3 +13,4 @@ function vector.distance(v1, v2)
     local y_diff = v1.y - v2.y
     return math.sqrt(x_diff * x_diff - y_diff * y_diff)
 end
+
